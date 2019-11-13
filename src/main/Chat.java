@@ -72,6 +72,7 @@ public class Chat implements MessageListener {
             server.stop();
             client.stop();
         }
+        writeToAllExecpt(msg,device);
     }
 
     @Override
@@ -86,11 +87,21 @@ public class Chat implements MessageListener {
             java.util.Scanner sc = new java.util.Scanner(System.in);
             String line = null;
             while ((line = sc.nextLine()) != null) {
-                if (mode == Mode.SERVER)
+                if (mode == Mode.SERVER || mode == Mode.BOTH)
                     server.write(line);
-                if (mode == Mode.CLIENT)
+                if (mode == Mode.CLIENT || mode == Mode.BOTH)
                     client.write(line);
             }
         }).start();
+    }
+
+    private void writeToAllExecpt(String message,Device source)
+    {
+        for(Device device : server.getDevices())
+        {
+            if(device.equals(source))
+                continue;
+            device.write(String.format("[%s] %s",source.getName(),message));
+        }
     }
 }
